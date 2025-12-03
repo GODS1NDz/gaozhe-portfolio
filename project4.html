@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的杂货铺</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;600&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* 自定义光标 */
+        .custom-cursor {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            border: 2px solid rgba(99, 102, 241, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-15px, -15px);
+        }
+        .cursor-dot {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: rgba(99, 102, 241, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-4px, -4px);
+        }
+        .custom-cursor.hovered {
+            border-color: rgba(99, 102, 241, 1);
+            background: rgba(99, 102, 241, 0.1);
+            width: 40px;
+            height: 40px;
+            transform: translate(-20px, -20px);
+        }
+        .cursor-dot.hovered {
+            background: rgba(99, 102, 241, 1);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        .back-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        .header-section {
+            padding: 8rem 3rem 4rem;
+            background: linear-gradient(135deg, rgba(55, 48, 163, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .header-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-family: 'Syncopate', sans-serif;
+            letter-spacing: 0.1em;
+        }
+        .header-subtitle {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 2rem;
+        }
+        .header-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+        }
+        .meta-item {
+            border-left: 2px solid rgba(99, 102, 241, 0.6);
+            padding-left: 1.5rem;
+        }
+        .meta-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.5rem;
+        }
+        .meta-value {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .content-section {
+            padding: 4rem 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .description {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 4rem;
+            max-width: 900px;
+        }
+        .gallery-mixed {
+            position: relative;
+            width: 100%;
+            height: 850px;
+            margin: 4rem 0;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        .gallery-item {
+            position: absolute;
+            overflow: hidden;
+            border-radius: 0;
+            box-shadow: none;
+            cursor: grab;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: none;
+        }
+        .gallery-item:active {
+            cursor: grabbing;
+        }
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+        .gallery-item.zoomed {
+            pointer-events: none;
+        }
+        .zoom-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 9998;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            cursor: zoom-out;
+        }
+        .zoom-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+        .zoom-modal img {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 0.5rem;
+            pointer-events: none;
+        }
+        .gallery-item img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+        .reset-btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.5);
+            color: white;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        .reset-btn:hover {
+            background: rgba(99, 102, 241, 0.4);
+            border-color: rgba(99, 102, 241, 0.8);
+        }
+        #imgPreview {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-out;
+            transition: opacity 0.3s;
+        }
+        #imgPreview img {
+            max-width: 90vw;
+            max-height: 90vh;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body class="bg-black text-white">
+    <!-- 自定义光标 -->
+    <div class="custom-cursor"></div>
+    <div class="cursor-dot"></div>
+
+    <button class="back-btn" onclick="window.history.back();">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M19 12H5M12 19l-7-7 7-7"></path>
+        </svg>
+        Back
+    </button>
+
+    <div class="header-section">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="header-title">我的杂货铺</h1>
+            <p class="header-subtitle">MY GROCERY STORE</p>
+            <div class="header-meta">
+                <div class="meta-item">
+                    <div class="meta-label">Category</div>
+                    <div class="meta-value">Digital Art / Hand-drawn Works / Product design</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Year</div>
+                    <div class="meta-value">2023-2025</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Role</div>
+                    <div class="meta-value">Individual designer</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <p class="description">
+            欢迎光临我的杂货铺，这是我设计生涯中或大或小的项目合集。每一件作品都承载着我对设计的热情与探索，无论是数字艺术、手绘作品，还是产品设计，都体现了我对细节和创新的追求。在这里，您将看到我如何将创意转化为视觉语言，以及我在不同领域中的尝试与突破。希望这些作品能带给您灵感与愉悦的体验。
+        </p>
+
+        <h2 style="font-size: 2rem; margin-bottom: 3rem; font-weight: 700;">Gallery - Mixed Layout</h2>
+        
+        <button class="reset-btn" onclick="resetGallery()">复位所有照片</button>
+        
+        <p style="font-size: 0.95rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 1.5rem; font-style: italic;">
+            💡 提示：你可以拖拽下方的图片重新排列，也可以双击图片查看大图
+        </p>
+        
+        <!-- zoom 模态框 -->
+        <div id="zoomModal" class="zoom-modal"></div>
+        
+        <!-- 混合网格布局 -->
+        <div class="gallery-mixed" id="gallery"></div>
+    </div>
+
+    <div id="imgPreview"></div>
+
+    <script>
+        const gallery = document.getElementById('gallery');
+        const images = [
+            { path: 'img/组/1.jpg' },
+            { path: 'img/组/2.png' },
+            { path: 'img/组/3.png' },
+            { path: 'img/组/4.png' },
+            { path: 'img/组/5.jpg' },
+            { path: 'img/组/6.png' },
+            { path: 'img/组/7.jpg' },
+            { path: 'img/组/8.jpg' },
+            { path: 'img/组/9.jpg' },
+            { path: 'img/组/10.jpg' },
+            { path: 'img/组/11.jpg' },
+            { path: 'img/组/12.png' },
+        ];
+        
+        let draggedElement = null;
+        let offsetX = 0;
+        let offsetY = 0;
+        const itemStates = [];
+        let maxZIndex = 12;
+        
+        function createGalleryItems() {
+            gallery.innerHTML = '';
+            const containerWidth = gallery.clientWidth;
+            const containerHeight = gallery.clientHeight;
+            const itemSize = 180; // 标准尺寸
+            const cols = Math.floor(containerWidth / (itemSize + 40)); // 列数
+            
+            images.forEach((img, i) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.dataset.index = i;
+                
+                // 网格式布局：按行列分配，然后添加随机偏移
+                const col = i % cols;
+                const row = Math.floor(i / cols);
+                const baseX = col * (itemSize + 40) + 20;
+                const baseY = row * (itemSize + 40) + 20;
+                
+                // 添加小随机偏移（±15px）避免完全规则
+                const offsetX = (Math.random() - 0.5) * 30;
+                const offsetY = (Math.random() - 0.5) * 30;
+                const xPos = Math.max(0, Math.min(baseX + offsetX, containerWidth - itemSize));
+                const yPos = Math.max(0, Math.min(baseY + offsetY, containerHeight - itemSize));
+                
+                item.style.left = xPos + 'px';
+                item.style.top = yPos + 'px';
+                item.style.width = itemSize + 'px';
+                item.style.height = itemSize + 'px';
+                item.style.zIndex = i;
+                
+                const imgEl = document.createElement('img');
+                imgEl.src = img.path;
+                imgEl.alt = `Gallery image ${i + 1}`;
+                imgEl.loading = 'lazy';
+                
+                item.appendChild(imgEl);
+                
+                // 拖拽事件
+                item.addEventListener('mousedown', startDrag);
+                item.addEventListener('touchstart', startDrag);
+                
+                // 双击放大
+                item.addEventListener('dblclick', (e) => {
+                    zoomImage(img.path);
+                    e.stopPropagation();
+                });
+                
+                gallery.appendChild(item);
+                
+                // 保存初始状态
+                itemStates[i] = {
+                    index: i,
+                    path: img.path,
+                    left: xPos,
+                    top: yPos
+                };
+            });
+        }
+        
+        function zoomImage(imgPath) {
+            const modal = document.getElementById('zoomModal');
+            const img = document.createElement('img');
+            img.src = imgPath;
+            img.alt = 'Zoomed image';
+            
+            modal.innerHTML = '';
+            modal.appendChild(img);
+            modal.classList.add('active');
+        }
+        
+        function closeZoom() {
+            const modal = document.getElementById('zoomModal');
+            modal.classList.remove('active');
+        }
+        
+        function startDrag(e) {
+            draggedElement = e.target.closest('.gallery-item');
+            if (!draggedElement || draggedElement.classList.contains('zoomed')) return;
+            
+            const rect = draggedElement.getBoundingClientRect();
+            const containerRect = gallery.getBoundingClientRect();
+            const clientX = e.clientX || e.touches?.[0].clientX || 0;
+            const clientY = e.clientY || e.touches?.[0].clientY || 0;
+            
+            offsetX = clientX - rect.left;
+            offsetY = clientY - rect.top;
+            
+            // 点击时将此项置于最顶层
+            maxZIndex++;
+            draggedElement.style.zIndex = maxZIndex;
+            draggedElement.style.cursor = 'grabbing';
+            draggedElement.dataset.dragged = true;
+            
+            document.addEventListener('mousemove', doDrag);
+            document.addEventListener('touchmove', doDrag);
+            document.addEventListener('mouseup', stopDrag);
+            document.addEventListener('touchend', stopDrag);
+            
+            e.preventDefault();
+        }
+        
+        function doDrag(e) {
+            if (!draggedElement) return;
+            
+            const clientX = e.clientX || e.touches?.[0].clientX || 0;
+            const clientY = e.clientY || e.touches?.[0].clientY || 0;
+            const containerRect = gallery.getBoundingClientRect();
+            const itemWidth = draggedElement.offsetWidth;
+            const itemHeight = draggedElement.offsetHeight;
+            
+            let x = clientX - containerRect.left - offsetX;
+            let y = clientY - containerRect.top - offsetY;
+            
+            // 限制在画板范围内
+            x = Math.max(0, Math.min(x, containerRect.width - itemWidth));
+            y = Math.max(0, Math.min(y, containerRect.height - itemHeight));
+            
+            draggedElement.style.left = x + 'px';
+            draggedElement.style.top = y + 'px';
+            
+            e.preventDefault();
+        }
+        
+        function stopDrag() {
+            if (draggedElement) {
+                draggedElement.style.cursor = 'grab';
+                draggedElement = null;
+            }
+            
+            document.removeEventListener('mousemove', doDrag);
+            document.removeEventListener('touchmove', doDrag);
+            document.removeEventListener('mouseup', stopDrag);
+            document.removeEventListener('touchend', stopDrag);
+        }
+        
+        function resetGallery() {
+            maxZIndex = 12;
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                const index = parseInt(item.dataset.index);
+                if (itemStates[index]) {
+                    item.style.left = itemStates[index].left + 'px';
+                    item.style.top = itemStates[index].top + 'px';
+                    item.style.zIndex = index;
+                }
+            });
+        }
+
+        function openPreview(src) {
+            const preview = document.getElementById('imgPreview');
+            const img = preview.querySelector('img') || document.createElement('img');
+            img.src = src;
+            if (!preview.querySelector('img')) {
+                preview.appendChild(img);
+            }
+            preview.style.display = 'flex';
+        }
+
+        // 光标系统
+        const cursor = document.querySelector('.custom-cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.15,
+                ease: 'power2.out'
+            });
+            gsap.to(cursorDot, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0
+            });
+        });
+
+        // 光标悬停效果
+        function setupCursorHover() {
+            const hoverElements = document.querySelectorAll('a, button, .back-btn, .gallery-item, .reset-btn');
+            hoverElements.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.classList.add('hovered');
+                    cursorDot.classList.add('hovered');
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursor.classList.remove('hovered');
+                    cursorDot.classList.remove('hovered');
+                });
+            });
+        }
+
+        // 初始化
+        createGalleryItems();
+        setupCursorHover();
+
+        document.getElementById('imgPreview').addEventListener('click', function() {
+            this.style.display = 'none';
+        });
+        
+        // zoom modal 点击关闭
+        document.getElementById('zoomModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeZoom();
+            }
+        });
+        
+        // ESC 键关闭 zoom
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeZoom();
+            }
+        });
+    </script>
+</body>
+</html>

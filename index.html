@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高哲</title>
+    
+    <!-- 字体引入 - Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;600&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS - 样式框架 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <!-- GSAP - 动画库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <!-- 自定义样式表 -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="antialiased">
+
+    <!-- 彩色光晕背景 - 3个光晕跟随鼠标 -->
+    <div class="glow-container">
+        <div class="glow-orb purple"></div>
+        <div class="glow-orb pink"></div>
+        <div class="glow-orb cyan"></div>
+    </div>
+
+    <!-- 自定义光标 - 双层设计 -->
+    <div class="custom-cursor"></div>
+    <div class="cursor-dot"></div>
+
+    <!-- 噪点纹理覆盖层 - 增加质感 -->
+    <div class="noise-overlay"></div>
+
+    <!-- 滚动进度条 - 页面顶部 -->
+    <div class="scroll-progress"></div>
+
+    <!-- 背景动画容器 - Canvas粒子效果 -->
+    <div id="canvas-container">
+        <canvas id="bgCanvas"></canvas>
+    </div>
+
+    <!-- 加载动画 -->
+    <div class="loader">
+        <div class="font-display text-2xl tracking-widest text-white">LOADING</div>
+        <div class="loader-bar">
+            <div class="loader-progress"></div>
+        </div>
+        <div class="text-gray-500 text-sm tracking-wider loader-percent">0%</div>
+    </div>
+
+    <!-- 顶部导航栏 -->
+    <nav class="top-navbar" id="navbar">
+        <div class="navbar-inner">
+            <!-- Logo -->
+            <a href="#home" class="nav-logo">STUDIO</a>
+            <!-- 桌面端导航菜单 -->
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
+                <li class="nav-item"><a href="#work" class="nav-link">Work</a></li>
+                <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
+                <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <!-- 移动端汉堡菜单按钮 -->
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 移动端全屏菜单 -->
+    <div class="mobile-menu" id="mobileMenu">
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="#home" class="nav-link">Home</a></li>
+            <li class="nav-item"><a href="#work" class="nav-link">Work</a></li>
+            <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
+            <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+    </div>
+
+    <!-- 主内容区域 -->
+    <main id="main-content" class="relative w-full">
+        
+        <!-- ==================== 首页/Hero区域 ==================== -->
+        <section id="home" class="min-h-screen flex flex-col items-center justify-center px-4 sm:px-8 relative">
+            <div class="w-full max-w-6xl">
+                <!-- 副标题 -->
+                <p class="text-sm tracking-[0.3em] text-gray-400 mb-4 ml-1 reveal-text">CREATIVE ART & TECHNOLOGY</p>
+                <!-- 主标题 - 大号文字 -->
+                <h1 class="text-5xl md:text-7xl lg:text-9xl font-bold leading-none mb-6">
+                    <span class="block overflow-hidden">
+                        <span class="inline-block hero-line">GAOZHE</span>
+                    </span>
+                    <span class="block overflow-hidden">
+                        <span class="inline-block hero-line text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-600">PORTFOLIO</span>
+                    </span>
+                    <span class="block overflow-hidden">
+                        <span class="inline-block hero-line">SPACE</span>
+                    </span>
+                </h1>
+                <!-- 描述文字 -->
+                <p class="max-w-lg text-gray-400 text-sm md:text-base leading-relaxed mb-8 reveal-text">
+                    Turning ideas into images, objects, and animation.
+                    Welcome to my slightly chaotic, mostly fun creative space.
+                </p>
+                <!-- CTA按钮 -->
+                <div class="reveal-text">
+                    <a href="#work" class="magnetic-btn">Explore Work</a>
+                </div>
+            </div>
+
+            <!-- 滚动指示器 - 浮动动画 -->
+            <div class="absolute bottom-10 left-1/2 flex flex-col items-center gap-2 floating">
+                <span class="text-xs tracking-widest text-gray-500 uppercase">Scroll</span>
+                <div class="w-[1px] h-12 bg-gradient-to-b from-gray-500 to-transparent"></div>
+            </div>
+        </section>
+
+        <!-- ==================== 作品展示区域 ==================== -->
+        <section id="work" class="py-32 px-4 sm:px-8">
+            <div class="w-full max-w-6xl mx-auto">
+                <!-- 区块标题 -->
+                <div class="mb-16">
+                    <h2 class="section-title text-3xl md:text-4xl font-bold">Selected Work</h2>
+                </div>
+
+                <!-- 项目网格 - 4个项目卡片 -->
+                <div class="grid grid-cols-1 gap-16 md:gap-24">
+                    
+                    <!-- 项目1 - NEBULA -->
+                    <a href="project1.html" class="group w-full flex flex-col items-center">
+                        <!-- 项目卡片 - 2:1比例 -->
+                        <div class="project-card w-full bg-neutral-800 rounded-xl relative shadow-2xl overflow-hidden">
+                            <!-- 卡片背景（替换为作品图片） -->
+                            <div class="card-image w-full h-full flex items-center justify-center">
+                                <img src="img/p1.jpg" alt="NEBULA" class="card-img" loading="lazy">
+                                <!-- 卡片数字已删除 -->
+                            </div>
+                            <!-- 悬停覆盖层 - 毛玻璃效果 -->
+                            <div class="card-overlay absolute inset-0 flex flex-col items-center justify-center text-white p-6">
+                                <span class="font-display text-xl md:text-2xl tracking-widest mb-2">NEON CITY / SILENT FRAMES</span>
+                                <span class="text-xs text-gray-300 uppercase tracking-wider mb-6">photography / post-production</span>
+                                <div class="magnetic-btn text-xs">View Project</div>
+                            </div>
+                        </div>
+                        <!-- 卡片下方信息 -->
+                        <div class="w-full flex justify-between items-baseline mt-6 px-1">
+                            <h3 class="text-xl md:text-2xl font-bold">PHOTOGRAPHY PROJECT</h3>
+                            <span class="text-xs text-gray-500 font-mono">2023-2025</span>
+                        </div>
+                    </a>
+
+                    <!-- 项目2 - VELOCITY -->
+                    <a href="project2.html" class="group w-full flex flex-col items-center">
+                        <div class="project-card w-full bg-neutral-800 rounded-xl relative shadow-2xl overflow-hidden">
+                            <div class="card-image w-full h-full flex items-center justify-center">
+                                <img src="img/p2.jpg" alt="VELOCITY" class="card-img" loading="lazy">
+                            </div>
+                            <div class="card-overlay absolute inset-0 flex flex-col items-center justify-center text-white p-6">
+                                <span class="font-display text-xl md:text-2xl tracking-widest mb-2">MATRIX OF LIGHT AND SHADOW</span>
+                                <span class="text-xs text-gray-300 uppercase tracking-wider mb-6">Installation art / Product design</span>
+                                <div class="magnetic-btn text-xs">View Project</div>
+                            </div>
+                        </div>
+                        <div class="w-full flex justify-between items-baseline mt-6 px-1">
+                            <h3 class="text-xl md:text-2xl font-bold">MATRIX OF LIGHT AND SHADOW</h3>
+                            <span class="text-xs text-gray-500 font-mono">2024</span>
+                        </div>
+                    </a>
+
+                    <!-- 项目3 - HORIZON -->
+                    <a href="project3.html" class="group w-full flex flex-col items-center">
+                        <div class="project-card w-full bg-neutral-800 rounded-xl relative shadow-2xl overflow-hidden">
+                            <div class="card-image w-full h-full flex items-center justify-center">
+                                <img src="img/p3.jpg" alt="HORIZON" class="card-img" loading="lazy">
+                                <!-- 卡片数字已删除 -->
+                            </div>
+                            <div class="card-overlay absolute inset-0 flex flex-col items-center justify-center text-white p-6">
+                                <span class="font-display text-xl md:text-2xl tracking-widest mb-2">SILKIE CHICKEN FAIRY</span>
+                                <span class="text-xs text-gray-300 uppercase tracking-wider mb-6">Illustration / Animation / Generative AI</span>
+                                <div class="magnetic-btn text-xs">View Project</div>
+                            </div>
+                        </div>
+                        <div class="w-full flex justify-between items-baseline mt-6 px-1">
+                            <h3 class="text-xl md:text-2xl font-bold">SILKIE CHICKEN FAIRY</h3>
+                            <span class="text-xs text-gray-500 font-mono">2025</span>
+                        </div>
+                    </a>
+
+                    <!-- 项目4 - AETHER -->
+                    <a href="project4.html" class="group w-full flex flex-col items-center">
+                        <div class="project-card w-full bg-neutral-800 rounded-xl relative shadow-2xl overflow-hidden">
+                            <div class="card-image w-full h-full flex items-center justify-center">
+                                <img src="img/p4.jpg" alt="AETHER" class="card-img" loading="lazy">
+                            </div>
+                            <div class="card-overlay absolute inset-0 flex flex-col items-center justify-center text-white p-6">
+                                <span class="font-display text-xl md:text-2xl tracking-widest mb-2">MY GROCERY STORE</span>
+                                <span class="text-xs text-gray-300 uppercase tracking-wider mb-6">Digital Art / Hand-drawn Works / Product design</span>
+                                <div class="magnetic-btn text-xs">View Project</div>
+                            </div>
+                        </div>
+                        <div class="w-full flex justify-between items-baseline mt-6 px-1">
+                            <h3 class="text-xl md:text-2xl font-bold">MY GROCERY STORE</h3>
+                            <span class="text-xs text-gray-500 font-mono">2023-2025</span>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 关于我区域 ==================== -->
+        <section id="about" class="py-32 px-4 sm:px-8 bg-gradient-to-b from-transparent via-neutral-900/50 to-transparent">
+            <div class="w-full max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                    <!-- 左侧：文字介绍 -->
+                    <div>
+                        <h2 class="section-title text-3xl md:text-4xl font-bold mb-8">About Me</h2>
+                        <p class="text-gray-400 leading-relaxed mb-6">
+                            I'm a creative developer passionate about building immersive digital experiences that blur the line between art and technology.
+                        </p>
+                        <p class="text-gray-400 leading-relaxed mb-8">
+                            With expertise in front-end development, motion design, and 3D graphics, I create unique web experiences that captivate and inspire.
+                        </p>
+                        <div>
+                            <a href="#contact" class="magnetic-btn">Get In Touch</a>
+                        </div>
+                    </div>
+                    <!-- 右侧：技能条 -->
+                    <div class="space-y-6">
+                        <!-- 设计技能 -->
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm uppercase tracking-wider">Design</span>
+                                <span class="text-sm text-gray-500">95%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-width="95"></div>
+                            </div>
+                        </div>
+                        <!-- 开发技能 -->
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm uppercase tracking-wider">Development</span>
+                                <span class="text-sm text-gray-500">90%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-width="90"></div>
+                            </div>
+                        </div>
+                        <!-- 动效技能 -->
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm uppercase tracking-wider">Motion</span>
+                                <span class="text-sm text-gray-500">85%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-width="85"></div>
+                            </div>
+                        </div>
+                        <!-- 3D技能 -->
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm uppercase tracking-wider">3D Graphics</span>
+                                <span class="text-sm text-gray-500">80%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-width="80"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 联系区域 ==================== -->
+        <section id="contact" class="py-32 px-4 sm:px-8">
+            <div class="w-full max-w-6xl mx-auto text-center">
+                <!-- 大标题 -->
+                <h2 class="text-4xl md:text-6xl lg:text-7xl font-bold mb-8">
+                    LET'S CREATE<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">SOMETHING</span><br>
+                    AMAZING
+                </h2>
+                <p class="text-gray-400 mb-12 max-w-lg mx-auto">
+                    Have a project in mind? Let's work together to bring your vision to life.
+                </p>
+                <!-- 邮箱链接 - 带滑动动画 -->
+                <div class="flex flex-wrap justify-center gap-8 mb-16">
+                    <a href="mailto:1350353429@qq.com" class="contact-link text-xl md:text-2xl font-bold" data-text="1350353429@qq.com">
+                        <span>1350353429@qq.com</span>
+                    </a>
+                </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 页脚 -->
+        <footer class="py-8 text-center text-gray-600 text-xs tracking-widest uppercase border-t border-gray-800">
+            &copy; 2024 Studio. All Rights Reserved.
+        </footer>
+    </main>
+
+    <!-- ==================== 项目详情视图容器 ==================== -->
+    <!-- 点击项目卡片后显示的全屏详情页 -->
+    <div id="detail-view" class="detail-view">
+        <!-- 详情页导航栏 -->
+        <nav class="detail-navbar" id="detailNavbar">
+            <!-- 返回按钮 -->
+            <button class="back-btn" id="backBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back
+            </button>
+            <!-- 当前项目标题 -->
+            <span class="detail-nav-title" id="detailNavTitle">PROJECT</span>
+            <!-- 上一个/下一个项目按钮 -->
+            <div class="flex gap-2">
+                <button class="project-nav-btn prev" id="prevProjectBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    Prev
+                </button>
+                <button class="project-nav-btn next" id="nextProjectBtn">
+                    Next
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </nav>
+        
+        <!-- 详情内容容器 - 由JavaScript动态填充 -->
+        <div id="detail-container" class="w-full min-h-screen"></div>
+    </div>
+
+    <!-- 自定义JavaScript -->
+    <script src="js/script.js"></script>
+</body>
+</html>

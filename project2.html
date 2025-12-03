@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>光影矩阵</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;600&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* 自定义光标 */
+        .custom-cursor {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            border: 2px solid rgba(16, 185, 129, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-15px, -15px);
+        }
+        .cursor-dot {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: rgba(16, 185, 129, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-4px, -4px);
+        }
+        .custom-cursor.hovered {
+            border-color: rgba(16, 185, 129, 1);
+            background: rgba(16, 185, 129, 0.1);
+            width: 40px;
+            height: 40px;
+            transform: translate(-20px, -20px);
+        }
+        .cursor-dot.hovered {
+            background: rgba(16, 185, 129, 1);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        .back-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        .header-section {
+            padding: 8rem 3rem 4rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(20, 184, 166, 0.1) 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .header-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-family: 'Syncopate', sans-serif;
+            letter-spacing: 0.1em;
+        }
+        .header-subtitle {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 2rem;
+        }
+        .header-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 3rem;
+        }
+        .meta-item {
+            border-left: 2px solid rgba(16, 185, 129, 0.6);
+            padding-left: 1.5rem;
+        }
+        .meta-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 0.5rem;
+        }
+        .meta-value {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .content-section {
+            padding: 4rem 3rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .description {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 4rem;
+            max-width: 900px;
+        }
+        /* 新的网格布局 - 支持原比例和拖拽 */
+        .gallery-grid-adaptive {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 4rem 0;
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .gallery-item:active {
+            cursor: pointer;
+        }
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+        .gallery-item-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            min-height: 200px;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+        /* 转换卡片样式 */
+        .transform-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            margin: 4rem 0;
+        }
+        .transform-card {
+            position: relative;
+            border-radius: 0;
+            overflow: hidden;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+        .transform-card-inner {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%;
+            overflow: hidden;
+        }
+        .transform-card-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .transform-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .transform-card-label {
+            text-align: left;
+            margin-top: 0.5rem;
+            margin-left: 0;
+            padding: 0;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+            letter-spacing: 0.02em;
+            line-height: 1.4;
+        }
+        .transform-card:hover {
+            opacity: 0.95;
+        }
+        .gallery-item.wide {
+            grid-column: span 2;
+        }
+        .gallery-item.tall {
+            grid-row: span 2;
+        }
+        .sort-info {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .sort-info strong {
+            color: rgba(16, 185, 129, 0.9);
+        }
+        #imgPreview {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-out;
+            transition: opacity 0.3s;
+        }
+        #imgPreview img {
+            max-width: 90vw;
+            max-height: 90vh;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body class="bg-black text-white">
+    <!-- 自定义光标 -->
+    <div class="custom-cursor"></div>
+    <div class="cursor-dot"></div>
+
+    <button class="back-btn" onclick="window.history.back();">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M19 12H5M12 19l-7-7 7-7"></path>
+        </svg>
+        Back
+    </button>
+
+    <div class="header-section">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="header-title">光影矩阵</h1>
+            <p class="header-subtitle">Matrix of Light and Shadow</p>
+            <div class="header-meta">
+                <div class="meta-item">
+                    <div class="meta-label">Category</div>
+                    <div class="meta-value">Installation art / Product design</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Year</div>
+                    <div class="meta-value">2024</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Teacher</div>
+                    <div class="meta-value">Huafan He / Hongxin Zhang</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-section">
+        <p class="description">
+            《光影矩阵 Matrix of Light and Shadow》是一件结合装置艺术与产品设计的创新作品，通过折纸、模型搭建、定制材料等方式，抽象自然结构与生活中的小物件，创造出有趣的光影灯台。
+        </p>
+        
+        <h2 style="font-size: 2rem; margin-bottom: 3rem; font-weight: 700;">Gallery</h2>
+
+        <!-- 转换卡片区域 -->
+        <div class="transform-cards">
+            <div class="transform-card" id="transformCard1">
+                <div class="transform-card-inner">
+                    <div class="transform-card-image" id="transformImage1">
+                        <img src="img/por2/11.jpg" alt="Design to Reality">
+                    </div>
+                </div>
+                <div class="transform-card-label">点击图片切换设计稿/实物</div>
+                <p></p>
+            </div>
+            
+            <div class="transform-card" id="transformCard2">
+                <div class="transform-card-inner">
+                    <div class="transform-card-image" id="transformImage2">
+                        <img src="img/por2/14.jpg" alt="Dark to Lit">
+                    </div>
+                </div>
+                <div class="transform-card-label">点击图片开/关灯</div>
+                <p></p>
+            </div>
+        </div>
+        
+        <!-- 自适应网格布局 -->
+        <div class="gallery-grid-adaptive" id="gallery" data-sortable="true"></div>
+    </div>
+
+    <div id="imgPreview"></div>
+
+    <script>
+        const images = [
+            { id: 1, path: 'img/por2/1.jpg', wide: false, tall: false },
+            { id: 2, path: 'img/por2/2.jpg', wide: false, tall: false },
+            { id: 3, path: 'img/por2/3.jpg', wide: false, tall: false },
+            { id: 4, path: 'img/por2/4.jpg', wide: false, tall: false },
+            { id: 5, path: 'img/por2/5.jpg', wide: false, tall: false },
+            { id: 6, path: 'img/por2/6.jpg', wide: false, tall: false },
+            { id: 7, path: 'img/por2/7.jpg', wide: false, tall: false },
+            { id: 8, path: 'img/por2/8.jpg', wide: false, tall: false },
+            { id: 9, path: 'img/por2/9.jpg', wide: false, tall: false },
+            { id: 10, path: 'img/por2/10.jpg', wide: false, tall: false },
+            { id: 11, path: 'img/por2/11.jpg', wide: false, tall: false },
+            { id: 12, path: 'img/por2/12.jpg', wide: false, tall: false }
+        ];
+
+        const gallery = document.getElementById('gallery');
+        let draggedElement = null;
+
+        // 转换卡片功能
+        function setupTransformCards() {
+            const card1 = document.getElementById('transformCard1');
+            const image1 = document.getElementById('transformImage1');
+            
+            const card2 = document.getElementById('transformCard2');
+            const image2 = document.getElementById('transformImage2');
+            
+            let isTransformed1 = false;
+            let isTransformed2 = false;
+
+            // 卡片1:11 <-> 12
+            function toggleCard1() {
+                const img = image1.querySelector('img');
+                const newImg = document.createElement('img');
+                newImg.src = isTransformed1 ? 'img/por2/11.jpg' : 'img/por2/12.jpg';
+                newImg.style.position = 'absolute';
+                newImg.style.top = '0';
+                newImg.style.left = '0';
+                newImg.style.width = '100%';
+                newImg.style.height = '100%';
+                newImg.style.objectFit = 'contain';
+                newImg.style.opacity = '0';
+                newImg.style.transition = 'opacity 1.5s ease-in-out';
+                newImg.style.pointerEvents = 'none';
+                
+                image1.appendChild(newImg);
+                
+                // 触发重排强制浏览器应用样式
+                newImg.offsetHeight;
+                newImg.style.opacity = '1';
+                
+                setTimeout(() => {
+                    img.src = newImg.src;
+                    newImg.remove();
+                    isTransformed1 = !isTransformed1;
+                }, 1500);
+            }
+
+            image1.addEventListener('click', toggleCard1);
+
+            // 卡片2:14 <-> 13
+            function toggleCard2() {
+                const img = image2.querySelector('img');
+                const newImg = document.createElement('img');
+                newImg.src = isTransformed2 ? 'img/por2/14.jpg' : 'img/por2/13.jpg';
+                newImg.style.position = 'absolute';
+                newImg.style.top = '0';
+                newImg.style.left = '0';
+                newImg.style.width = '100%';
+                newImg.style.height = '100%';
+                newImg.style.objectFit = 'contain';
+                newImg.style.opacity = '0';
+                newImg.style.transition = 'opacity 1.5s ease-in-out';
+                newImg.style.pointerEvents = 'none';
+                
+                image2.appendChild(newImg);
+                
+                // 触发重排强制浏览器应用样式
+                newImg.offsetHeight;
+                newImg.style.opacity = '1';
+                
+                setTimeout(() => {
+                    img.src = newImg.src;
+                    newImg.remove();
+                    isTransformed2 = !isTransformed2;
+                }, 1500);
+            }
+
+            image2.addEventListener('click', toggleCard2);
+        }
+
+        // 初始化图库
+        function initGallery() {
+            gallery.innerHTML = '';
+            images.forEach((img, index) => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                if (img.wide) item.classList.add('wide');
+                if (img.tall) item.classList.add('tall');
+                item.dataset.imageId = img.id;
+                item.dataset.index = index;
+                
+                item.innerHTML = `
+                    <div class="gallery-item-wrapper">
+                        <img src="${img.path}" alt="Gallery image ${img.id}" loading="lazy">
+                    </div>
+                `;
+                
+                // 点击预览
+                item.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'IMG') {
+                        openPreview(img.path);
+                    }
+                });
+                
+                gallery.appendChild(item);
+            });
+        }
+
+        function openPreview(src) {
+            const preview = document.getElementById('imgPreview');
+            const img = preview.querySelector('img') || document.createElement('img');
+            img.src = src;
+            if (!preview.querySelector('img')) {
+                preview.appendChild(img);
+            }
+            preview.style.display = 'flex';
+        }
+
+        // 光标系统
+        const cursor = document.querySelector('.custom-cursor');
+        const cursorDot = document.querySelector('.cursor-dot');
+
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0.15,
+                ease: 'power2.out'
+            });
+            gsap.to(cursorDot, {
+                x: e.clientX,
+                y: e.clientY,
+                duration: 0
+            });
+        });
+
+        // 光标悬停效果
+        function setupCursorHover() {
+            const hoverElements = document.querySelectorAll('a, button, .back-btn, .gallery-item, .transform-card');
+            hoverElements.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.classList.add('hovered');
+                    cursorDot.classList.add('hovered');
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursor.classList.remove('hovered');
+                    cursorDot.classList.remove('hovered');
+                });
+            });
+        }
+
+        // 初始化图库、转换卡片和光标
+        initGallery();
+        setupTransformCards();
+        setupCursorHover();
+
+        document.getElementById('imgPreview').addEventListener('click', function() {
+            this.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
