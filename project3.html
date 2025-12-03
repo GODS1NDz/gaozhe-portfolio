@@ -216,15 +216,45 @@
         
         .video-section h2 {
             font-size: 2rem;
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
             font-weight: 700;
         }
-        
+
+        .section-heading {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
         .video-content {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr min(760px, 55%);
             gap: 3rem;
             align-items: start;
+        }
+
+        .video-description {
+            align-self: start;
+        }
+
+        .video-player {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            aspect-ratio: 16 / 9;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            justify-self: center;
+        }
+
+        .video-player video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: black;
+            display: block;
         }
         
         .video-description {
@@ -252,6 +282,11 @@
         @media (max-width: 768px) {
             .video-content {
                 grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+            .video-player {
+                width: 100%;
+                justify-self: center;
             }
         }
     </style>
@@ -290,10 +325,9 @@
     </div>
 
     <div class="content-section">
-        <p class="description">
-            基于中国传统文化与现代AI技术打造的插画绘本与动画项目，运用了手绘与生成式AI相结合的创作方法，创作了一个带有民间神话色彩的故事。
+        <p class="description">基于中国传统文化与现代AI技术打造的插画绘本与动画项目，运用了手绘与生成式AI相结合的创作方法，创作了一个带有民间神话色彩的故事。</p>
 
-        <h2 style="font-size: 2rem; margin-bottom: 3rem; font-weight: 700;">Book Viewer - 翻页书本</h2>
+        <h2 class="section-heading">Book Viewer - 翻页书本</h2>
         
         <!-- 书本翻页展示 -->
         <div class="book-container">
@@ -320,10 +354,11 @@
         
         <!-- 视频板块 -->
         <div class="video-section">
-            <h2 style="font-size: 2rem; margin-bottom: 3rem; font-weight: 700;">Behind The Scenes</h2>
+            <h2>Behind The Scenes</h2>
             <div class="video-content">
                 <div class="video-description">
                     <p>在这部视频中，我用到了AI生成技术来辅助创作插画和动画的过程。通过Midjourney生成初步的视觉素材，然后在Photoshop中进行细化和调整，最后使用After Effects进行动画制作和后期处理。这个过程展示了传统艺术与现代技术的结合，体现了我对创新创作方法的探索。</p>
+                </div>
                 <div class="video-player">
                     <video controls>
                         <source src="img/video.mp4" type="video/mp4">

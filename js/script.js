@@ -503,26 +503,6 @@ function generateDetailContentSimple(id) {
     document.getElementById('bottomNextBtn').addEventListener('click', () => navigateProject('next'));
 }
 
-
-/**
- * 获取上一个项目的标题
- * 用于底部导航按钮显示
- */
-function getPrevProjectTitle() {
-    const prevId = currentProjectId > 1 ? currentProjectId - 1 : totalProjects;
-    // 尝试提取括号内的英文名，否则返回完整标题
-    return projects[prevId].title.split('(')[1]?.replace(')', '') || projects[prevId].title;
-}
-
-/**
- * 获取下一个项目的标题
- * 用于底部导航按钮显示
- */
-function getNextProjectTitle() {
-    const nextId = currentProjectId < totalProjects ? currentProjectId + 1 : 1;
-    return projects[nextId].title.split('(')[1]?.replace(')', '') || projects[nextId].title;
-}
-
 // 全局图片预览层
 if (!document.getElementById('imgPreview')) {
     const preview = document.createElement('div');
